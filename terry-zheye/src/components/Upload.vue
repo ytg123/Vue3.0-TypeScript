@@ -39,6 +39,9 @@ export default defineComponent({
     beforeUplaod: {
       type: Function as PropType<CheckFunction>
 
+    },
+    uploaded: {
+      type: Object
     }
   },
   inheritAttrs: false,
@@ -46,7 +49,7 @@ export default defineComponent({
   setup (props, cxt) {
     const fileInput = ref<null | HTMLInputElement>(null)
     const uploadedData = ref(null)
-    const fileStatus = ref<UploadStatus>('ready')
+    const fileStatus = ref<UploadStatus>(props.uploaded ? 'success' : 'ready')
     const triggerUpload = () => {
       if (fileInput.value) {
         fileInput.value.click()
