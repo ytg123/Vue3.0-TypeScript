@@ -6,8 +6,7 @@
         class="form-control"
         :class="{'is-invalid': inputRef.error}"
         id="exampleInputEmail1"
-        :value="inputRef.val"
-        @input="updateValue"
+        v-model="inputRef.val"
         @blur="validateInput" />
 
         <textarea
@@ -16,8 +15,7 @@
         class="form-control"
         :class="{'is-invalid': inputRef.error}"
         id="exampleInputEmail1"
-        :value="inputRef.val"
-        @input="updateValue"
+        v-model="inputRef.val"
         @blur="validateInput">
 
         </textarea>
@@ -27,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, PropType, onMounted } from 'vue'
+import { defineComponent, reactive, PropType, onMounted, watch, computed } from 'vue'
 import { emitter } from './ValidateForm.vue'
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 const pwdReg = new RegExp('(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{8,30}')
@@ -54,17 +52,27 @@ export default defineComponent({
   inheritAttrs: false,
   setup (props, { emit }) {
     const inputRef = reactive({
-      val: props.modelValue || '',
+      val: computed({
+        get: () => props.modelValue || '',
+        set: val => {
+          emit('update:modelValue', val)
+        }
+      }),
       error: false,
       message: ''
     })
+    // :value="inputRef.val"
+    // @input="updateValue"
+    // watch(() => props.modelValue, (newValue) => {
+    //   inputRef.val = newValue || ''
+    // })
 
-    const updateValue = (e: KeyboardEvent) => {
-      const targetValue = (e.target as HTMLInputElement).value
-      inputRef.val = targetValue
+    // const updateValue = (e: KeyboardEvent) => {
+    //   const targetValue = (e.target as HTMLInputElement).value
+    //   inputRef.val = targetValue
 
-      emit('update:modelValue', targetValue)
-    }
+    //   emit('update:modelValue', targetValue)
+    // }
 
     const validateInput = () => {
       if (props.rules) {
@@ -101,8 +109,7 @@ export default defineComponent({
 
     return {
       inputRef,
-      validateInput,
-      updateValue
+      validateInput
     }
   }
 })
