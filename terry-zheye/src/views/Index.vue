@@ -18,11 +18,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onMounted } from 'vue'
+import { defineComponent, computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { GlobalDataProps } from '@/store'
 import ColumnList from '../components/ColumnList.vue'
 import { useRouter } from 'vue-router'
+import useLoadMore from '@/hooks/useLoadMore'
 export default defineComponent({
   name: 'Index',
   components: {
@@ -32,7 +33,7 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>()
     const router = useRouter()
     const list = computed(() => store.state.columns)
-
+    const total = computed(() => 100)
     onMounted(() => {
       store.dispatch('fetchColumns')
     })
@@ -43,6 +44,11 @@ export default defineComponent({
       })
     }
 
+    const {
+      loadMorePage,
+      isLastPage
+    } = useLoadMore('fetchColumns', total)
+    console.log(loadMorePage, isLastPage)
     return {
       list,
       _addPost
